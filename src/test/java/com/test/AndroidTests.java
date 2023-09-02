@@ -138,5 +138,29 @@ class AndroidTests {
 
     }
 
+    @Test
+    void dragAndDrop() throws MalformedURLException, InterruptedException {
+        UiAutomator2Options options = new UiAutomator2Options();
+        options.setPlatformName("Android");//optional
+        options.setAutomationName(AutomationName.ANDROID_UIAUTOMATOR2);//optional
+        options.setDeviceName("rv-test-device");
+        options.setApp(System.getProperty("user.dir") + "/apps/ApiDemos-debug.apk");
+        AndroidDriver driver = new AndroidDriver(new URL("http://127.0.0.1:4723"), options);
+        driver.findElement(AppiumBy.xpath(".//*[@text='Views']")).click();
+        driver.findElement(AppiumBy.xpath(".//*[@text='Drag and Drop']")).click();
+        WebElement source = driver.findElement(AppiumBy.id("io.appium.android.apis:id/drag_dot_1"));
+        WebElement destination = driver.findElement(AppiumBy.id("io.appium.android.apis:id/drag_dot_2"));
+        Point sourceElementCenter = getCenterOfElement(source.getLocation(), destination.getSize());
+        Point destinationElementCenter = getCenterOfElement(destination.getLocation(), source.getSize());
 
+        PointerInput finger1 = new PointerInput(PointerInput.Kind.TOUCH, "finger1");
+        Sequence sequence = new Sequence(finger1, 1)
+                .addAction(finger1.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), sourceElementCenter))
+                .addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(finger1, Duration.ofMillis(500)))
+                .addAction(finger1.createPointerMove(Duration.ofMillis(500), PointerInput.Origin.viewport(), destinationElementCenter))
+                .addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        driver.perform(Collections.singletonList(sequence));
+
+    }
 }
