@@ -30,6 +30,7 @@ class AndroidTest {
         driver.findElement(By.xpath("//android.view.ViewGroup[@content-desc=\"menu item log in\"]")).click();
         Thread.sleep(2000);
         driver.findElement(AppiumBy.accessibilityId("Username input field")).sendKeys("tesssttt");
+        driver.quit();
     }
 
     @Test
@@ -41,5 +42,7 @@ class AndroidTest {
         options.setApp(System.getProperty("user.dir") + "/apps/iOS-Simulator-MyRNDemoApp.1.3.0-162.zip");
         IOSDriver driver = new IOSDriver(new URL("http://127.0.0.1:4723"), options);
         Thread.sleep(4000);
+        driver.findElements(By.name("store item text")).get(0).click();
+        driver.quit();
     }
 }
