@@ -6,6 +6,7 @@ import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.remote.AutomationName;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -18,6 +19,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static com.proj.libs.Actions.*;
 
@@ -108,6 +110,31 @@ class AndroidTests {
         PointerInput finger1 = new PointerInput(PointerInput.Kind.TOUCH, "finger1");
         PointerInput finger2 = new PointerInput(PointerInput.Kind.TOUCH, "finger2");
         driver.perform(Arrays.asList(sequence1(finger1, centerOfElement), sequence2(finger2, centerOfElement)));
+
+    }
+
+    @Test
+    void swipeOrScroll() throws MalformedURLException, InterruptedException {
+        UiAutomator2Options options = new UiAutomator2Options();
+        options.setPlatformName("Android");//optional
+        options.setAutomationName(AutomationName.ANDROID_UIAUTOMATOR2);//optional
+        options.setDeviceName("rv-test-device");
+        options.setApp(System.getProperty("user.dir") + "/apps/ApiDemos-debug.apk");
+        AndroidDriver driver = new AndroidDriver(new URL("http://127.0.0.1:4723"), options);
+        driver.findElement(AppiumBy.xpath(".//*[@text='Views']")).click();
+        Dimension size = driver.manage().window().getSize();
+        int startX = size.getWidth() / 2;
+        int startY = size.getHeight() / 2;
+        int endX = startX;
+        int endY = (int) (size.getWidth() * 0.25);
+        PointerInput finger1 = new PointerInput(PointerInput.Kind.TOUCH, "finger1");
+        Sequence sequence = new Sequence(finger1, 1)
+                .addAction(finger1.createPointerMove(Duration.ZERO, PointerInput.Origin.viewport(), startX, startY))
+                .addAction(finger1.createPointerDown(PointerInput.MouseButton.LEFT.asArg()))
+                .addAction(new Pause(finger1, Duration.ofMillis(200)))
+                .addAction(finger1.createPointerMove(Duration.ofMillis(100), PointerInput.Origin.viewport(), endX, endY))
+                .addAction(finger1.createPointerUp(PointerInput.MouseButton.LEFT.asArg()));
+        driver.perform(Collections.singletonList(sequence));
 
     }
 
